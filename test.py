@@ -3,7 +3,7 @@ from scte import Scte35
 
 s = Scte35.Scte35()
 
-test_string = "/DBKAAAAAsrbAP/wBQb+PGICLAA0AjJDVUVJAAAAAX/TAALpzRwBHjAwMDM1TUEwMDAwMDAwMDAyMTZUMTAzMDE4MjAwMAEBAGl25uA="
+test_string = "/DBIAAAAAsrbAP/wBQb/sbn3DQAyAjBDVUVJ/////3//AAAba98JHHVybjpuYmN1bmkuY29tOmJyYzozNTA3NTU4OTMxBQCk1C6w"
 
 myEvent = s.parse_splice_event(test_string)
 

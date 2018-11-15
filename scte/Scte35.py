@@ -1,10 +1,11 @@
 import bitstring
 import base64
+from scte import scte35_enums
 
 
 class Scte35:
 
-    def __init__(self, message_text=None):
+    def __init__(self):
         None
 
     def parse_splice_event(self, b64_data):
@@ -30,11 +31,15 @@ class TimeSignal:
     def __init__(self, bitarray_data):
         self.splice_time = {}
         self.splice_time["time_specified_flag"] = bitarray_data.read("bool")
-        print("time specified flag " + str(self.splice_time["time_specified_flag"]))
         if self.splice_time["time_specified_flag"] is True:
             bitarray_data.pos += 6
             self.splice_time["pts_time"] = bitarray_data.read("uint:33")
-            print("pts time = " + str(self.splice_time["pts_time"]))
+
+    def __str__(self):
+        return str(self.splice_time)
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class SegmentationDescriptor:
@@ -42,20 +47,20 @@ class SegmentationDescriptor:
         None
 
 
-
 class SpliceEvent(Scte35):
     def __parse_splice_descriptors(self, descriptor_loop_length, bitarray_data):
         splice_descriptors = []
         bytes_left = descriptor_loop_length
         while bytes_left > 0:
-            print("bytes_left" + str(bytes_left))
             new_descriptor = {}
             new_descriptor["splice_descriptor_tag"] = bitarray_data.read("uint:8")
-            print("splice descriptor tag" + str(new_descriptor["splice_descriptor_tag"]))
             bytes_left -= 1
             new_descriptor["descriptor_length"] = bitarray_data.read("uint:8")
-            print("splice descriptor length "+str(new_descriptor["descriptor_length"]))
             bytes_left -= 1
+            if new_descriptor["splice_descriptor_tag"] not in [0, 1, 2, 3]:
+                print("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
+                bytes_left -= new_descriptor["descriptor_length"]
+                continue
             new_descriptor["identifier"] = bitarray_data.read("uint:32")
             bytes_left -= 4
             if new_descriptor["splice_descriptor_tag"] is 0:
@@ -114,6 +119,7 @@ class SpliceEvent(Scte35):
                     bytes_left -= new_descriptor["segmentation_upid_length"]
                     new_descriptor["segmentation_type_id"] = bitarray_data.read("uint:8")
                     bytes_left -= 1
+                    new_descriptor["segmentation_message"] = scte35_enums.get_message(new_descriptor["segmentation_type_id"])
                     new_descriptor["segment_num"] = bitarray_data.read("uint:8")
                     bytes_left -= 1
                     new_descriptor["segments_expected"] = bitarray_data.read("uint:8")
@@ -146,18 +152,16 @@ class SpliceEvent(Scte35):
         self.splice_info_section["splice_command_type"] = bitarray_data.read("uint:8")
         if self.splice_info_section["splice_command_type"] is 0:
             self.is_splice_null = True
-            self.splice_null = SpliceNull(bitarray_data)
+            self.splice_info_section["splice_null"] = SpliceNull(bitarray_data)
         elif self.splice_info_section["splice_command_type"] is 4:
             self.is_splice_schedule = True
-            self.splice_schedule = SpliceSchedule(bitarray_data)
+            self.splice_info_section["splice_schedule"] = SpliceSchedule(bitarray_data)
         elif self.splice_info_section["splice_command_type"] is 5:
             self.is_splice_insert = True
-            self.splice_insert = SpliceInsert(bitarray_data)
+            self.splice_info_section["splice_insert"] = SpliceInsert(bitarray_data)
         elif self.splice_info_section["splice_command_type"] is 6:
             self.is_time_signal = True
-            print("bitarray pos = " + str(bitarray_data.pos))
-            self.time_signal = TimeSignal(bitarray_data)
-            print("bitarray pos = " + str(bitarray_data.pos))
+            self.splice_info_section["time_signal"] = TimeSignal(bitarray_data)
         # Loop length is number of total bytes for descriptors
         self.splice_info_section["descriptor_loop_length"] = bitarray_data.read("uint:16")
         if self.splice_info_section["descriptor_loop_length"] > 0:
