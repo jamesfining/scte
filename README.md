@@ -18,7 +18,8 @@ Install the library and command-line utilities with <code>pip install scte</code
 Documentation
 -------------
 
-T.B.D.
+v0.0.1 includes a partial implementation of a SCTE-35 decoder that accepts base64 strings as input.
+The decoder implementation follows [SCTE-35 2017](https://www.scte.org/SCTEDocs/Standards/SCTE%2035%202017.pdf)
 
 
 Contribute

@@ -1,4 +1,4 @@
-segmentation_type_ids = {
+__segmentation_type_ids = {
     0: {
         "message": "Not Indicated"
     },
@@ -87,14 +87,15 @@ segmentation_type_ids = {
 
 
 def get_message(type_id):
-    return segmentation_type_ids[type_id]["message"]
+    return __segmentation_type_ids[type_id]["message"]
 
 
 def get_hex_string(type_id):
+    # TODO
     return None
 
 
 def get_id_from_message(message):
-    for type_id in segmentation_type_ids:
-        if segmentation_type_ids[type_id]["message"] is message:
+    for type_id in __segmentation_type_ids:
+        if __segmentation_type_ids[type_id]["message"] is message:
             return type_id

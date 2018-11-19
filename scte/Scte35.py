@@ -1,12 +1,13 @@
 import bitstring
 import base64
 from scte import scte35_enums
+import logging
 
 
 class Scte35:
 
     def __init__(self):
-        None
+        self.log = logging.getLogger()
 
     def parse_splice_event(self, b64_data):
         return SpliceEvent(b64_data)
@@ -58,7 +59,7 @@ class SpliceEvent(Scte35):
             new_descriptor["descriptor_length"] = bitarray_data.read("uint:8")
             bytes_left -= 1
             if new_descriptor["splice_descriptor_tag"] not in [0, 1, 2, 3]:
-                print("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
+                self.log.info("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
                 bytes_left -= new_descriptor["descriptor_length"]
                 continue
             new_descriptor["identifier"] = bitarray_data.read("uint:32")
@@ -108,7 +109,6 @@ class SpliceEvent(Scte35):
                     if new_descriptor["segmentation_duration_flag"] is True:
                         new_descriptor["segmentation_duration"] = bitarray_data.read("uint:40")
                         bytes_left -= 5
-                    # Add a function that returns the friendly name of this type
                     new_descriptor["segmentation_upid_type"] = bitarray_data.read("uint:8")
                     bytes_left -= 1
                     new_descriptor["segmentation_upid_length"] = bitarray_data.read("uint:8")
@@ -134,6 +134,7 @@ class SpliceEvent(Scte35):
         return splice_descriptors
 
     def __init__(self, b64_data):
+        super(SpliceEvent, self).__init__()
         decoded_data = base64.standard_b64decode(b64_data)
         bitarray_data = bitstring.BitString(bytes=decoded_data)
         self.splice_info_section = {}
