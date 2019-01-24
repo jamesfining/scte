@@ -66,7 +66,7 @@ class SegmentationDescriptor:
             new_descriptor["segmentation_event_id"] = bitarray_data.read("uint:32")
             new_descriptor["segmentation_event_cancel_indicator"] = bitarray_data.read("bool")
             # Reserved
-            bitarray_data.pos += 7
+            new_descriptor["reserved1"] = bitarray_data.read("uint:7")
             if new_descriptor["segmentation_event_cancel_indicator"] is False:
                 new_descriptor["program_segmentation_flag"] = bitarray_data.read("bool")
                 new_descriptor["segmentation_duration_flag"] = bitarray_data.read("bool")
@@ -75,10 +75,10 @@ class SegmentationDescriptor:
                     new_descriptor["web_delivery_allowed_flag"] = bitarray_data.read("bool")
                     new_descriptor["no_regional_blackout_flag"] = bitarray_data.read("bool")
                     new_descriptor["archive_allowed_flag"] = bitarray_data.read("bool")
-                    new_descriptor["device_restrictions"] = bitarray_data.read("uint:2")
+                    new_descriptor["device_restrictions"] = bitarray_data.read("bin:2")
                 else:
                     # Reserved
-                    bitarray_data.pos += 5
+                    new_descriptor["reserved2"] = bitarray_data.read("uint:5")
                 if new_descriptor["program_segmentation_flag"] is False:
                     new_descriptor["component_count"] = bitarray_data.read("uint:8")
                     loop_counter = new_descriptor["component_count"]
@@ -109,6 +109,47 @@ class SegmentationDescriptor:
             # Time Descriptor
             None
         self.as_dict = new_descriptor
+
+    @property
+    def bitstring_format(self):
+        bitstring_format = 'uint:8=splice_descriptor_tag,' \
+                            'uint:8=descriptor_length,' \
+                            'uint:32=identifier,' \
+                            'uint:32=segmentation_event_id,' \
+                            'bool=segmentation_event_cancel_indicator,' \
+                            'uint:7=reserved1,'
+        if self.as_dict['segmentation_event_cancel_indicator'] is False:
+            bitstring_format += 'bool=program_segmentation_flag,' \
+                                'bool=segmentation_duration_flag,' \
+                                'bool=delivery_not_restricted_flag,'
+            if self.as_dict['delivery_not_restricted_flag'] is False:
+                bitstring_format += 'bool=web_delivery_allowed_flag,' \
+                                    'bool=no_regional_blackout_flag,' \
+                                    'bin:2=device_restrictions,'
+            else:
+                bitstring_format += 'uint:5=reserved2,'
+            if self.as_dict['program_segmentation_flag'] is False:
+                # Not supported yet
+                None
+            if self.as_dict['segmentation_duration_flag'] is True:
+                bitstring_format += 'uint:40=segmentation_duration,'
+            bitstring_format += 'uint:8=segmentation_upid_type,' \
+                                'uint:8=segmentation_upid_length,' \
+                                'uint:'+str(self.as_dict['segmentation_upid_length']*8)+'=segmentation_upid,' \
+                                'uint:8=segmentation_type_id,' \
+                                'uint:8=segment_num,' \
+                                'uint:8=segments_expected'
+            if self.as_dict['segmentation_type_id'] in [0x34, 0x36]:
+                bitstring_format += ',uint:8=sub_segment_num,' \
+                                    'uint:8=sub_segments_expected'
+        return bitstring_format
+
+    def serialize(self):
+        return bitstring.pack(fmt=self.bitstring_format, **self.as_dict)
+
+    @property
+    def hex_string(self):
+        return self.serialize().hex.upper()
 
 
 class SpliceEvent(Scte35):
