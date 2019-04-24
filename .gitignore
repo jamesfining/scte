@@ -1,2 +1,7 @@
 .idea/*
 *.pyc
+
+bin/
+include/
+lib/
+.Python
