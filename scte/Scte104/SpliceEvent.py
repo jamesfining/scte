@@ -1,5 +1,6 @@
-import scte104_enums
+from scte.Scte104 import scte104_enums
 import bitstring
+
 
 class SpliceEvent:
     def __init__(self, bitarray_data, init_dict=None):
@@ -55,6 +56,7 @@ class SpliceEvent:
             print("data_length", hex(self.as_dict['ops'][key]["data_length"]), self.as_dict['ops'][key]["data_length"])
             print("data", self.as_dict['ops'][key]["data"])
 
+#TODO: Not sure these will behave like you expect them to. Looks like op_id occurs multiple times under different keys.
     @property
     def op_id(self):
         return self.as_dict[op_id]

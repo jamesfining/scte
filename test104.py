@@ -1,5 +1,5 @@
 #!/usr/bin/env
-from SpliceEvent import SpliceEvent
+from scte.Scte104 import SpliceEvent
 import bitstring
 
 test_string = "/DBIAAAAAsrbAP/wBQb/sbn3DQAyAjBDVUVJ/////3//AAAba98JHHVybjpuYmN1bmkuY29tOmJyYzozNTA3NTU4OTMxBQCk1C6w"

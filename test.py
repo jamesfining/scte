@@ -8,7 +8,7 @@ from scte.Scte35 import SpliceEvent, SpliceDescriptor
 #test_string = "/DAzAAAAAAAAAP/wBQb+M5DyeQAdAhtDVUVJAAABRX+/AwxUVk5BMTAwMDAwMDETAACr9xhM"
 
 #Zero Length UPID
-test_string = "/DAsAAAAAsrbAP/wBQb+AkxyrgAWAhRDVUVJAAAAA3//AAApJfYBAAEAAC4V+uA="
+test_string = "/DAWAAAAAAAAAP/wBQb+CoOvMgAAxJSiUg=="
 
 hex_descriptor = "021B43554549000000027FBF030C54564E413130303030303031300000"
 

@@ -1,16 +1,22 @@
+# TODO: Unused import
 import bitstring
-import scte104_enums
+from scte.Scte104 import scte104_enums
+
+
 ## Not implemented
 def init_request_data(bitarray_data):
     return None
+
 
 ## Not implemented
 def alive_request_data(bitarray_data):
     return None
 
+
 ## Not implemented
 def alive_response_data(bitarray_data):
     return None
+
 
 def splice_request_data(bitarray_data):
     request_data = {}
@@ -24,11 +30,13 @@ def splice_request_data(bitarray_data):
     request_data["auto_return_flag"] = bitarray_data.read("uint:8")
     return request_data
 
+
 def  encrypted_dpi_request_data(bitarray_data):
     request_data = {}
     request_data["encryption_algorithm"] = bitarray_data.read("uint:8")
     request_data["cw_index"] = bitarray_data.read("uint:8")
     return request_data
+
 
 def update_control_word_data(bitarray_data):
     request_data= {}
@@ -37,52 +45,64 @@ def update_control_word_data(bitarray_data):
     request_data["cw_b"] = bitarray_data.read("uint:64")
     request_data["cw_c"] = bitarray_data.read("uint:64")
     return request_data
- 
+
+
 def delete_control_word_data(bitarray_data):
     request_data = {}
     request_data["cw_index"] = bitarray_data.read("uint:8")
     return request_data
 
+
 ## Not implmented
 def component_mode_dpi_request_data (bitarray_data):
     return None
+
 
 ## Not implemented
 def start_schedule_download_request_data(bitarray_data):
     return None
 
+
 ## Not implemented
 def schedule_definition_data(bitarray_data):
     return None
+
 
 ## Not implemented
 def schedule_component_mode_request_data(bitarray_data):
     return None
 
+
 ##Not implemented
 def transmit_schedule_request_data(bitarray_data):
     return None
+
 
 def time_signal_request_data(bitarray_data):
     request_data = {}
     request_data["pre_roll_time"] = bitarray_data.read("uint:16")
     return request_data
 
+
 ## Not implemented
 def insert_avail_descriptor_request_data(bitarray_data):
     return None
+
 
 ## Not implemented
 def insert_descriptor_request_data(bitarray_data):
     return None
 
+
 ##Not implemented
 def insert_DTMF_descriptor_request_data(bitarray_data):
     return None
 
+
 ##Not implemented
 def insert_segmentation_descriptor_request_data(bitarray_data):
     return None
+
 
 ##Not implemented
 def proprietary_command_request_data(bitarray_data):
@@ -92,6 +112,7 @@ def proprietary_command_request_data(bitarray_data):
 def splice_null_request_data(bitarray_data):
     return {}
 
+
 def inject_section_data_request(bitarray_data):
     request_data = {}
     request_data["scte35_command_length"] = bitarray_data.read("uint:16")
@@ -100,12 +121,14 @@ def inject_section_data_request(bitarray_data):
     request_data["scte35_command_contents"] = bitarray_data.read("uint" + str(request_data["scte35_command_length"]))
     return request_data
 
+
 def insert_avail_descriptor_request_data(bitarray_data):
     request_data = {}
     request_data["num_provider_avails"] = bitarray_data.read("uint:8")
     request_data["avails"] = []
     [request_data["avails"].append(bitarray_data.read("uint:32")) for i in range(request_data["num_provider_avails"])]
     return
+
 
 def insert_segmentation_descriptor_request_data(bitarray_data):
     request = {}
@@ -134,16 +157,20 @@ def insert_segmentation_descriptor_request_data(bitarray_data):
         return request
     return request
 
+
 ## Not implemented
 def proprietary_cmmand_request_data(bitarray_data):
     return None
 
+
 def insert_tier_data(bitarray_data):
     return {"insert_tier_data": bitarray_data.read("uint:16")}
+
 
 ## Not implemented
 def insert_time_descriptor(bitarray_data):
     return None
+
 
 ##Not implemented
 def reserved(bitarray_data):

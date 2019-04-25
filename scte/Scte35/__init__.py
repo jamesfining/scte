@@ -5,4 +5,4 @@ from scte.Scte35.SpliceInsert import SpliceInsert
 from scte.Scte35.SpliceNull import SpliceNull
 from scte.Scte35.SpliceSchedule import SpliceSchedule
 from scte.Scte35.TimeSignal import TimeSignal
-from scte.Scte35.scte35_enum import get_message
+from scte.Scte35.scte35_enums import get_message
