@@ -1,7 +1,14 @@
 #!/usr/bin/env
 from scte.Scte35 import SpliceEvent, SpliceDescriptor
 
-test_string = "/DBIAAAAAsrbAP/wBQb/sbn3DQAyAjBDVUVJ/////3//AAAba98JHHVybjpuYmN1bmkuY29tOmJyYzozNTA3NTU4OTMxBQCk1C6w"
+#test_string = "/DBIAAAAAsrbAP/wBQb/sbn3DQAyAjBDVUVJ/////3//AAAba98JHHVybjpuYmN1bmkuY29tOmJyYzozNTA3NTU4OTMxBQCk1C6w"
+
+#test_string = "/DAzAAAAAAAAAP/wBQb/4z6IEgAdAhtDVUVJE8WAEH+/AwxUVk5BMTAwMDAwMDEQAACj2jGV"
+
+#test_string = "/DAzAAAAAAAAAP/wBQb+M5DyeQAdAhtDVUVJAAABRX+/AwxUVk5BMTAwMDAwMDETAACr9xhM"
+
+#Zero Length UPID
+test_string = "/DAsAAAAAsrbAP/wBQb+AkxyrgAWAhRDVUVJAAAAA3//AAApJfYBAAEAAC4V+uA="
 
 hex_descriptor = "021B43554549000000027FBF030C54564E413130303030303031300000"
 
