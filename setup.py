@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name='scte',
   packages=['scte'],
-  version='1.0.0',
+  version='1.0.1',
   license='apache-2.0',
   description='Tools for working with SCTE standards.',
   author='James Fining',
