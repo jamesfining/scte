@@ -1,13 +1,19 @@
-from scte.Scte104 import read_splice_event
+from scte.scte.Scte104 import read_splice_event
 
 
 def read_data(op_id, bitarray_data):
     op_data = __op_ids_multi_op[op_id]
     if not op_data: return None
 
-    parse_function = op_data["function"]
+    parse_function = op_data["decode_function"]
     return parse_function(bitarray_data)
 
+def encode_data(op_id, bitarray_data, event_object, position):
+    op_data = __op_ids_multi_op[op_id]
+    if not op_data: return None
+
+    encode_function = op_data["encode_function"]
+    return encode_function(bitarray_data, event_object, position)
 
 def get_op_id_type(op_id):
     if op_id >= 0x0013 and op_id <= 0x00FF: return "RESERVED FOR FUTURE BASIC REQUESTS"
@@ -108,64 +114,84 @@ __op_ids_single_op = {
 __op_ids_multi_op = {
     0x0100: {
         "type": "inject_section_data_request",
-        "function": read_splice_event.inject_section_data_request},
+        "decode_function": read_splice_event.inject_section_data_request,
+        "encode_function": read_splice_event.inject_section_data_request_encode},
     0x0101: {
         "type": "splice_request_data",
-        "function": read_splice_event.splice_request_data},
+        "decode_function": read_splice_event.splice_request_data,
+        "encode_function": read_splice_event.splice_request_data_encode},
     0x0102: {
         "type": "splice_null_request_data",
-        "function": read_splice_event.splice_null_request_data},
+        "decode_function": read_splice_event.splice_null_request_data,
+        "encode_function": read_splice_event.splice_null_request_data_encode},
     0x0103: {
         "type": "start_schedule_download_request_data",
-        "function": read_splice_event.start_schedule_download_request_data},
+        "decode_function": read_splice_event.start_schedule_download_request_data,
+        "encode_function": read_splice_event.start_schedule_download_request_data_encode},
     0x0104: {
         "type": "time_signal_request_data",
-        "function": read_splice_event.time_signal_request_data},
+        "decode_function": read_splice_event.time_signal_request_data,
+        "encode_function": read_splice_event.time_signal_request_data_encode},
     0x0105: {
         "type": "transmit_schedule_request_data",
-        "function": read_splice_event.transmit_schedule_request_data},
+        "decode_function": read_splice_event.transmit_schedule_request_data,
+        "encode_function": read_splice_event.transmit_schedule_request_data_encode},
     0x0106: {
         "type": "component_mode_dpi_request_data",
-        "function": read_splice_event.component_mode_dpi_request_data},
+        "decode_function": read_splice_event.component_mode_dpi_request_data,
+        "encode_function": read_splice_event.component_mode_dpi_request_data_encode},
     0x0107: {
         "type": "encrypted_dpi_request_data",
-        "function": read_splice_event.encrypted_dpi_request_data},
+        "decode_function": read_splice_event.encrypted_dpi_request_data,
+        "encode_function": read_splice_event.encrypted_dpi_request_data_encode},
     0x0108: {
         "type": "insert_descriptor_request_data",
-        "function": read_splice_event.insert_descriptor_request_data},
+        "decode_function": read_splice_event.insert_descriptor_request_data,
+        "encode_function": read_splice_event.insert_descriptor_request_data_encode},
     0x0109: {
         "type": "insert_DTMF_descriptor_request_data",
-        "function": read_splice_event.insert_DTMF_descriptor_request_data},
+        "decode_function": read_splice_event.insert_DTMF_descriptor_request_data,
+        "encode_function": read_splice_event.insert_DTMF_descriptor_request_data_encode},
     0x010A: {
         "type": "insert_avail_descriptor_request_data",
-        "function": read_splice_event.insert_avail_descriptor_request_data},
+        "decode_function": read_splice_event.insert_avail_descriptor_request_data,
+        "encode_function": read_splice_event.insert_avail_descriptor_request_data_encode},
     0x010B: {
         "type": "insert_segmentation_descriptor_request_data",
-        "function": read_splice_event.insert_segmentation_descriptor_request_data},
+        "decode_function": read_splice_event.insert_segmentation_descriptor_request_data,
+        "encode_function": read_splice_event.insert_segmentation_descriptor_request_data_encode},
     0x010C: {
         "type": "proprietary_command_request_data",
-        "function": read_splice_event.proprietary_command_request_data},
+        "decode_function": read_splice_event.proprietary_command_request_data,
+        "encode_function": read_splice_event.proprietary_command_request_data_encode},
     0x010D: {
         "type": "schedule_component_mode_request_data",
-        "function": read_splice_event.schedule_component_mode_request_data},
+        "decode_function": read_splice_event.schedule_component_mode_request_data,
+        "encode_function": read_splice_event.schedule_component_mode_request_data_encode},
     0x010E: {
         "type": "schedule_definition_data",
-        "function": read_splice_event.schedule_definition_data},
+        "decode_function": read_splice_event.schedule_definition_data,
+        "encode_function": read_splice_event.schedule_definition_data_encode},
     0x010F: {
         "type": "insert_tier_data",
-        "function": read_splice_event.insert_tier_data},
+        "decode_function": read_splice_event.insert_tier_data,
+        "encode_function": read_splice_event.insert_tier_data_encode},
     0x0110: {
         "type": "insert_time_descriptor",
-        "function": read_splice_event.insert_time_descriptor},
+        "decode_function": read_splice_event.insert_time_descriptor,
+        "encode_function": read_splice_event.insert_time_descriptor_encode},
     0x0300: {
         "type": "delete_control_word_data",
-        "function": read_splice_event.delete_control_word_data},
+        "decode_function": read_splice_event.delete_control_word_data,
+        "encode_function": read_splice_event.delete_control_word_data_encode},
     0x0301: {
         "type": "update_control_word_data",
-        "function": read_splice_event.update_control_word_data},
+        "decode_function": read_splice_event.update_control_word_data,
+        "encode_function": read_splice_event.update_control_word_data_encode},
     0xFFFF: {
         "type": "Reserved",
-        "function": read_splice_event.reserved}
+        "decode_function": read_splice_event.reserved,
+        "encode_function": read_splice_event.reserved_encode}
 }
 
 __segmentation_type_ids = {

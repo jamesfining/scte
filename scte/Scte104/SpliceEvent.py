@@ -1,6 +1,7 @@
-from scte.Scte104 import scte104_enums
+from scte.scte.Scte104 import scte104_enums
 import bitstring
-
+import json
+byte_size = 8
 
 class SpliceEvent:
     def __init__(self, bitarray_data, init_dict=None):
@@ -31,17 +32,20 @@ class SpliceEvent:
             message_dict["timestamp"]["GP_number"] = bitarray_data.read("uint:8")
             message_dict["timestamp"]["GP_edge"] = bitarray_data.read("uint:8")
         message_dict["num_ops"] = bitarray_data.read("uint:8")
-        message_dict["ops"] = {}
+        message_dict["ops"] = []
         for index in range(message_dict["num_ops"]):
-            message_dict["ops"][index] = {}
+            message_dict["ops"].append({})
             message_dict["ops"][index]["op_id"] = bitarray_data.read("uint:16")
             message_dict["ops"][index]["type"] = scte104_enums.get_multi_op_id_type(message_dict["ops"][index]["op_id"])
             message_dict["ops"][index]["data_length"] = bitarray_data.read("uint:16")
-            bit_subdata = bitstring.BitString(bytes=bytes.fromhex(bitarray_data.read("hex:" + str(message_dict["ops"][index]["data_length"]*8))))
+            bit_subdata = bitstring.BitString(bytes=bytes.fromhex(bitarray_data.read("hex:" + str(message_dict["ops"][index]["data_length"]*byte_size))))
             message_dict["ops"][index]["data"] = scte104_enums.read_data(message_dict["ops"][index]["op_id"], bit_subdata) 
         self.as_dict = message_dict
 
     def print(self):
+        print(json.dumps(self.as_dict, indent=4, sort_keys=False))
+
+    def print_detailed(self):
         print("reserved", hex(self.as_dict['reserved']['raw']), self.as_dict['reserved']['type'])
         print("message_size", hex(self.as_dict['message_size']), self.as_dict['message_size'])
         print("protocol_version", hex(self.as_dict['protocol_version']), self.as_dict['protocol_version'])
@@ -55,44 +59,61 @@ class SpliceEvent:
             print("op_id", hex(self.as_dict['ops'][key]["op_id"]), self.as_dict['ops'][key]["op_id"], self.as_dict['ops'][key]["type"])
             print("data_length", hex(self.as_dict['ops'][key]["data_length"]), self.as_dict['ops'][key]["data_length"])
             print("data", self.as_dict['ops'][key]["data"])
+                
+    def to_binary(self):
+        self.position = 0
+        bit_array = bitstring.BitArray(length=self.as_dict["message_size"]*byte_size)
+        self.manipulate_bits(bit_array, self.as_dict["reserved"]["raw"], bytes=2)
+        self.manipulate_bits(bit_array, self.as_dict["message_size"], bytes=2)
+        self.manipulate_bits(bit_array, self.as_dict["protocol_version"], bytes=1)
+        self.manipulate_bits(bit_array, self.as_dict["as_index"], bytes=1)
+        self.manipulate_bits(bit_array, self.as_dict["message_number"], bytes=1)
+        self.manipulate_bits(bit_array, self.as_dict["dpi_pid_index"], bytes=2)
+        self.manipulate_bits(bit_array, self.as_dict["scte35_protocol_version"], bytes=1)
+        self.manipulate_bits(bit_array, self.as_dict["timestamp"]["time_type"], bytes=1) ##timestamp
 
-#TODO: Not sure these will behave like you expect them to. Looks like op_id occurs multiple times under different keys.
-    @property
-    def op_id(self):
-        return self.as_dict[op_id]
+        if self.as_dict["timestamp"]["time_type"] == 1:
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["UTC_seconds"], bytes=4)
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["UTC_microseconds"], bytes=2)
+        elif self.as_dict["timestamp"]["time_type"] == 2:
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["hours"], bytes=1)
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["minutes"], bytes=1)
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["seconds"], bytes=1)
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["frames"], bytes=1)
+        elif self.as_dict["timestamp"]["time_type"] == 3:
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["GP_number"], bytes=1)
+            self.manipulate_bits(bit_array, self.as_dict["timestamp"]["GP_edge"], bytes=1)
 
-    @property
-    def message_size(self):
-        return self.as_dict[message_size]
+        self.manipulate_bits(bit_array, self.as_dict["num_ops"], bytes=1)
+        for index in range(self.as_dict["num_ops"]):
+            ## Read in metadatato  bit string
+            self.manipulate_bits(bit_array, self.as_dict["ops"][index]["op_id"], bytes=2)
+            self.manipulate_bits(bit_array, self.as_dict["ops"][index]["data_length"], bytes=2)
+            
+            ## read in actual position to metadata
+            scte104_enums.encode_data(self.as_dict["ops"][index]["op_id"], bit_array, self.as_dict["ops"][index]["data"], self.position)
+        
+            ##adjust position by data offset
+            self.position = self.position + (self.as_dict["ops"][index]["data_length"]) * byte_size
+        return bit_array
 
-    @property
-    def protocol_version(self):
-        return self.as_dict[protocol_version]
+    def to_dict(self):
+        return self.as_dict
 
-    @property
-    def as_index(self):
-        return self.as_dict[as_index]
 
-    @property
-    def message_number(self):
-        return self.as_dict[message_number]
+    def manipulate_bits(self, bit_array, value, bytes=1):
+        hex_val = self.hex_string(value, bytes)
+        bit_array.overwrite(hex_val, pos=self.position)
+        self.position = self.position + bytes*byte_size
+        return None
 
-    @property
-    def dpi_pid_index(self):
-        return self.as_dict[dpi_pid_index]
 
-    @property
-    def scte35_protocol(self):
-        return self.as_dict[scte35_protocol]
+    def hex_string(self, value, bytes):
+        s = hex(value) 
+        return '0x' + s[2:].zfill(bytes*2)
 
-    @property
-    def timestamp(self):
-        return self.as_dict[timestamp]
+    def get_pre_roll_time(self):
+        return self.as_dict["ops"][0]["data"]["pre_roll_time"]
 
-    @property
-    def num_ops(self):
-        return self.as_dict[num_ops]
-
-    @property
-    def data(self):
-        return self.as_dict[data]
+    def set_pre_roll_time(self, time):
+        self.as_dict["ops"][0]["data"]["pre_roll_time"] = time 
