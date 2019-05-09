@@ -1,6 +1,6 @@
 # TODO: Unused import
 import bitstring
-from scte.scte.Scte104 import scte104_enums
+from scte.Scte104 import scte104_enums
 
 def manipulate_bits(bit_array, value, position, bytes):
     hex_val = hex_string(value, bytes)

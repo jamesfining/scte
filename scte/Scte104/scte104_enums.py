@@ -1,4 +1,4 @@
-from scte.scte.Scte104 import read_splice_event
+from scte.Scte104 import read_splice_event
 
 
 def read_data(op_id, bitarray_data):

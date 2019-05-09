@@ -8,7 +8,7 @@ from scte.Scte35 import SpliceEvent, SpliceDescriptor
 #test_string = "/DAzAAAAAAAAAP/wBQb+M5DyeQAdAhtDVUVJAAABRX+/AwxUVk5BMTAwMDAwMDETAACr9xhM"
 
 #Zero Length UPID
-test_string = "/DAWAAAAAAAAAP/wBQb+CoOvMgAAxJSiUg=="
+test_string = "/DA6AAAAAsrbAP/wBQb+Bp8k9gAkAiJDVUVJAAAAAX//AAE07tIBDkVQMDAwMDExODk0OTU0AQUAONWP9g=="
 
 hex_descriptor = "021B43554549000000027FBF030C54564E413130303030303031300000"
 
@@ -16,12 +16,12 @@ myEvent = SpliceEvent(test_string)
 
 print(myEvent.splice_info_section)
 
-descriptorObject = SpliceDescriptor.from_hex_string(hex_descriptor)
+#descriptorObject = SpliceDescriptor.from_hex_string(hex_descriptor)
 
-print(descriptorObject.as_dict)
+#print(descriptorObject.as_dict)
 
-print("serialized: " + descriptorObject.hex_string)
-print("original:   " + hex_descriptor)
+#print("serialized: " + descriptorObject.hex_string)
+#print("original:   " + hex_descriptor)
 
 descriptor_dictionary = {'splice_descriptor_tag': 2,
                          'descriptor_length': 27,

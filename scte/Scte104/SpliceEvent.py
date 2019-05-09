@@ -1,4 +1,4 @@
-from scte.scte.Scte104 import scte104_enums
+from scte.Scte104 import scte104_enums
 import bitstring
 import json
 byte_size = 8
