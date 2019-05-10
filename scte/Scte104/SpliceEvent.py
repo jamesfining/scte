@@ -1,4 +1,5 @@
 from scte.Scte104 import scte104_enums
+import copy
 import bitstring
 import json
 byte_size = 8
@@ -100,6 +101,8 @@ class SpliceEvent:
     def to_dict(self):
         return self.as_dict
 
+    def deep_copy(self):
+        return copy.deepcopy(self.as_dict)
 
     def manipulate_bits(self, bit_array, value, bytes=1):
         hex_val = self.hex_string(value, bytes)
