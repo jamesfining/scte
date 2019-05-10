@@ -72,7 +72,12 @@ class SpliceDescriptor:
         return bitstring_format
 
     def serialize(self):
-        return bitstring.pack(fmt=self.bitstring_format, **self.as_dict)
+        the_dict = self.as_dict
+        if 'reserved1' not in the_dict:
+            the_dict['reserved1'] = 127
+        if 'reserved2' not in the_dict:
+            the_dict['reserved2'] = 31
+        return bitstring.pack(fmt=self.bitstring_format, **the_dict)
 
     @property
     def hex_string(self):
