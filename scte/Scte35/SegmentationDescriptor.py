@@ -36,9 +36,8 @@ class SegmentationDescriptor:
             new_descriptor["segmentation_upid_type"] = bitarray_data.read("uint:8")
             new_descriptor["segmentation_upid_length"] = bitarray_data.read("uint:8")
             # UPID Parsing needs more work
-            upid_length_bits = new_descriptor["segmentation_upid_length"] * 8
-            if upid_length_bits > 0:
-                new_descriptor["segmentation_upid"] = bitarray_data.read("uint:" + str(upid_length_bits))
+            if new_descriptor["segmentation_upid_length"] > 0:
+                new_descriptor["segmentation_upid"] = bitarray_data.read("bytes:" + str(new_descriptor["segmentation_upid_length"]))
             new_descriptor["segmentation_type_id"] = bitarray_data.read("uint:8")
             new_descriptor["segmentation_message"] = scte35_enums.get_message(
                 new_descriptor["segmentation_type_id"])
