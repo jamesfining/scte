@@ -18,9 +18,21 @@ class SpliceEvent:
             splice_descriptors.append(new_descriptor)
         return splice_descriptors
 
-    def __init__(self, b64_data):
+    def __init__(self, b64_data, hex_data=None, init_dict=None):
         super(SpliceEvent, self).__init__()
-        decoded_data = base64.standard_b64decode(b64_data)
+
+        if init_dict:
+            self.splice_info_section = init_dict
+            return
+
+        decoded_data = None
+        if b64_data:
+            decoded_data = base64.standard_b64decode(b64_data)
+        elif hex_data:
+            decoded_data = int(hex_data, 16)
+        elif init_dict is None:
+            raise TypeError('SpliceEvent must be created with B64 data, Hex data, or a passed-in object')
+
         bitarray_data = bitstring.BitString(bytes=decoded_data)
         self.splice_info_section = {}
         self.splice_info_section["table_id"] = bitarray_data.read("uint:8")
@@ -52,3 +64,14 @@ class SpliceEvent:
         self.splice_info_section["descriptor_loop_length"] = bitarray_data.read("uint:16")
         if self.splice_info_section["descriptor_loop_length"] > 0:
             self.splice_info_section["splice_descriptors"] = self.__parse_splice_descriptors(self.splice_info_section["descriptor_loop_length"], bitarray_data)
+
+
+    @classmethod
+    def from_hex_string(cls, hex_string):
+        bitarray_data = bitstring.BitString(bytes=bytes.fromhex(hex_string))
+        return cls(b64_data=None, hex_data=bitarray_data)
+
+    @classmethod
+    def from_dict(cls, input_dict):
+        # Need to do input checking here
+        return cls(b64_data=None, hex_data=None, init_dict=input_dict)
