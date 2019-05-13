@@ -5,6 +5,10 @@ from scte.Scte35 import SegmentationDescriptor
 class SpliceDescriptor:
     def __init__(self, bitarray_data, init_dict=None):
         if init_dict is not None:
+            if 'reserved1' not in init_dict:
+                init_dict['reserved1'] = 127
+            if 'reserved2' not in init_dict:
+                init_dict['reserved2'] = 31
             self.as_dict = init_dict
             return
         new_descriptor = {}
@@ -72,12 +76,7 @@ class SpliceDescriptor:
         return bitstring_format
 
     def serialize(self):
-        the_dict = self.as_dict
-        if 'reserved1' not in the_dict:
-            the_dict['reserved1'] = 127
-        if 'reserved2' not in the_dict:
-            the_dict['reserved2'] = 31
-        return bitstring.pack(fmt=self.bitstring_format, **the_dict)
+        return bitstring.pack(fmt=self.bitstring_format, **self.as_dict)
 
     @property
     def hex_string(self):
