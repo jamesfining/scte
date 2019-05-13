@@ -29,7 +29,7 @@ class SpliceEvent:
         if b64_data:
             decoded_data = base64.standard_b64decode(b64_data)
         elif hex_data:
-            decoded_data = int(hex_data, 16)
+            decoded_data = bytes.fromhex(hex_data)
         elif init_dict is None:
             raise TypeError('SpliceEvent must be created with B64 data, Hex data, or a passed-in object')
 
@@ -68,8 +68,7 @@ class SpliceEvent:
 
     @classmethod
     def from_hex_string(cls, hex_string):
-        bitarray_data = bitstring.BitString(bytes=bytes.fromhex(hex_string))
-        return cls(b64_data=None, hex_data=bitarray_data)
+        return cls(b64_data=None, hex_data=hex_string)
 
     @classmethod
     def from_dict(cls, input_dict):
