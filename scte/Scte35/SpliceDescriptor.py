@@ -4,7 +4,11 @@ from scte.Scte35 import SegmentationDescriptor
 
 class SpliceDescriptor:
     def __init__(self, bitarray_data, init_dict=None):
-        if init_dict is not None:
+        if init_dict:
+            if 'reserved1' not in init_dict:
+                init_dict['reserved1'] = 127
+            if 'reserved2' not in init_dict:
+                init_dict['reserved2'] = 31
             self.as_dict = init_dict
             return
         new_descriptor = {}
@@ -62,7 +66,7 @@ class SpliceDescriptor:
                 bitstring_format += 'uint:40=segmentation_duration,'
             bitstring_format += 'uint:8=segmentation_upid_type,' \
                                 'uint:8=segmentation_upid_length,' \
-                                'uint:' + str(self.as_dict['segmentation_upid_length'] * 8) + '=segmentation_upid,' \
+                                'bytes:' + str(self.as_dict['segmentation_upid_length']) + '=segmentation_upid,' \
                                                                                               'uint:8=segmentation_type_id,' \
                                                                                               'uint:8=segment_num,' \
                                                                                               'uint:8=segments_expected'
@@ -77,3 +81,14 @@ class SpliceDescriptor:
     @property
     def hex_string(self):
         return self.serialize().hex.upper()
+
+    def __str__(self):
+        return str(self.as_dict)
+
+    def __repr__(self):
+        return self.__str__()
+
+    @classmethod
+    def from_dict(cls, input_dict):
+        # Need to do input checking here
+        return cls(bitarray_data=None, init_dict=input_dict)
