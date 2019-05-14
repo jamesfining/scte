@@ -93,7 +93,7 @@ class SpliceEvent:
             self.splice_info_section["splice_descriptors"] = self.__parse_splice_descriptors(self.splice_info_section["descriptor_loop_length"], bitarray_data)
 
     #
-    @property
+    @property
     def bitstring_format(self):
         """
         Return a formatted string representing the object for use by the bitstring library.
@@ -143,7 +143,7 @@ class SpliceEvent:
 
         return splice_info_section_begin_bs + splice_command_type_bs + descriptor_loop_length_bs + splice_descriptors_bs
 
-    @property
+    @property
     def hex_string(self):
         a = self.serialize().hex.upper()
         return a

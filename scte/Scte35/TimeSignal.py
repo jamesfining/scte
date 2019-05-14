@@ -1,4 +1,4 @@
-import bitstring
+import bitstring
 
 class TimeSignal:
     def __init__(self, bitarray_data, init_dict=None):
