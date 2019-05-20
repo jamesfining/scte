@@ -3,7 +3,9 @@ import bitstring
 from scte.Scte104 import scte104_enums
 
 def manipulate_bits(bit_array, value, position, bytes):
-    hex_val = hex_string(value, bytes)
+    hex_val = value
+    if type(hex_val) == type(int()):
+      hex_val = hex_string(value, bytes)
     bit_array.overwrite(hex_val, pos=position)
     return bytes*8
 
@@ -168,19 +170,17 @@ def insert_descriptor_request_data_encode(bitarray_data, event_object, position)
     return None
 
 
-##Not implemented
 def insert_DTMF_descriptor_request_data(bitarray_data):
-    return None
+    request_data = {}
+    request_data["pre_roll"] = bitarray_data.read("uint:8")
+    request_data["dtmf_length"] = bitarray_data.read("uint:8")
+    request_data["dtmf"] = bitarray_data.read("uint:" + str(request_data["dtmf_length"]*8))
+    return request_data
 
 def insert_DTMF_descriptor_request_data_encode(bitarray_data, event_object, position):
-    return None
-
-
-##Not implemented
-def insert_segmentation_descriptor_request_data(bitarray_data):
-    return None
-
-def insert_segmentation_descriptor_request_data_encode(bitarray_data, event_object, position):
+    position += manipulate_bits(bitarray_data, event_object["pre_roll"], position, bytes=1)
+    position += manipulate_bits(bitarray_data, event_object["dtmf_length"], position, bytes=1)
+    position += manipulate_bits(bitarray_data, event_object["dtmf"], position, bytes=event_object["dtmf_length"])
     return None
 
 
@@ -231,7 +231,7 @@ def insert_segmentation_descriptor_request_data(bitarray_data):
         request["duration"] = bitarray_data.read("uint:16")
         request["segmentation_upid_type"] = bitarray_data.read("uint:8")
         request["segmentation_upid_length"] = bitarray_data.read("uint:8")
-        request["segmentation_upid"] = bitarray_data.read("uint:" + str(request["segmentation_upid_length"]*8))
+        request["segmentation_upid"] = bitarray_data.read("bytes:" + str(request["segmentation_upid_length"]))
         request["segmentation_type_id"] = {"decimal": bitarray_data.read("uint:8")}
         request["segmentation_type_id"]["name"] = scte104_enums.get_segmentation_type(request["segmentation_type_id"]["decimal"])
         request["segment_num"] = bitarray_data.read("uint:8")

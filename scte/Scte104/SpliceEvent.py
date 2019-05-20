@@ -1,4 +1,5 @@
 from scte.Scte104 import scte104_enums
+import copy
 import bitstring
 import json
 byte_size = 8
@@ -43,7 +44,10 @@ class SpliceEvent:
         self.as_dict = message_dict
 
     def print(self):
-        print(json.dumps(self.as_dict, indent=4, sort_keys=False))
+        print(str(self))
+
+    def __str__(self):
+        return(json.dumps(self.to_dict(upid_as_str=True), indent=4, sort_keys=False))
 
     def print_detailed(self):
         print("reserved", hex(self.as_dict['reserved']['raw']), self.as_dict['reserved']['type'])
@@ -97,9 +101,19 @@ class SpliceEvent:
             self.position = self.position + (self.as_dict["ops"][index]["data_length"]) * byte_size
         return bit_array
 
-    def to_dict(self):
-        return self.as_dict
+    def to_dict(self, upid_as_str=False):
+        the_dict = copy.deepcopy(self.as_dict)
+        if upid_as_str:
+          if "ops" in the_dict:
+            for idx,op in enumerate(the_dict['ops']):
+              if "data" in op:
+                if "segmentation_upid" in op['data']:
+                  the_dict["ops"][idx]["data"]['segmentation_upid'] = \
+                      str(the_dict["ops"][idx]["data"]['segmentation_upid'])
+        return the_dict
 
+    def deep_copy(self):
+        return copy.deepcopy(self.as_dict)
 
     def manipulate_bits(self, bit_array, value, bytes=1):
         hex_val = self.hex_string(value, bytes)
