@@ -170,7 +170,6 @@ def insert_descriptor_request_data_encode(bitarray_data, event_object, position)
     return None
 
 
-##Not implemented
 def insert_DTMF_descriptor_request_data(bitarray_data):
     request_data = {}
     request_data["pre_roll"] = bitarray_data.read("uint:8")
