@@ -1,4 +1,5 @@
 import base64
+import copy
 import bitstring
 from scte.Scte35.TimeSignal import TimeSignal
 from scte.Scte35.SpliceDescriptor import SpliceDescriptor
@@ -20,7 +21,7 @@ class SpliceEvent:
             else:
                 new_descriptor = SpliceDescriptor(bitarray_data)
             # Descriptor Length does not include splice_descriptor_tag
-            bytes_left -= new_descriptor.as_dict["descriptor_length"]+2
+            bytes_left -= new_descriptor.as_dict()["descriptor_length"]+2
             splice_descriptors.append(new_descriptor)
         return splice_descriptors
 
@@ -145,8 +146,18 @@ class SpliceEvent:
 
     @property
     def hex_string(self):
-        a = self.serialize().hex.upper()
-        return a
+        return self.serialize().hex.upper()
+
+    @property
+    def as_dict(self):
+        the_dict = copy.deepcopy(self.splice_info_section)
+        if "time_signal" in the_dict:
+            the_dict["time_signal"] = dict(the_dict["time_signal"])
+        if "splice_descriptors" in self.splice_info_section:
+            the_dict["splice_descriptors"] = []
+            for splice_descriptor in self.splice_info_section["splice_descriptors"]:
+                the_dict["splice_descriptors"] += [ splice_descriptor.as_dict(upid_as_str=True) ]
+        return the_dict
 
     @classmethod
     def from_hex_string(cls, hex_string):

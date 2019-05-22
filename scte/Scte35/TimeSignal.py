@@ -28,6 +28,12 @@ class TimeSignal:
     def __str__(self):
         return str(self.splice_time)
 
+    def __iter__(self): #overridding this to return tuples of (key,value)
+        arr = [('time_specified_flag',self.splice_time['time_specified_flag'])]
+        if self.splice_time["time_specified_flag"] is True:
+            arr += [('pts_time',self.splice_time['pts_time'])]
+        return iter(arr)
+
     def __repr__(self):
         return self.__str__()
 

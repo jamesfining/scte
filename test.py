@@ -1,5 +1,6 @@
 #!/usr/bin/env
 from scte.Scte35 import SpliceEvent, SpliceDescriptor
+import json
 
 #test_string = "/DBIAAAAAsrbAP/wBQb/sbn3DQAyAjBDVUVJ/////3//AAAba98JHHVybjpuYmN1bmkuY29tOmJyYzozNTA3NTU4OTMxBQCk1C6w"
 
@@ -77,3 +78,5 @@ event_dictionary = {'table_id': 252, 'section_syntax_indicator': False, 'private
 eventObject2 = SpliceEvent.from_dict(event_dictionary)
 
 print("event from dict:  " + str(eventObject2.splice_info_section))
+
+print("as a dict: " + json.dumps(eventObject2.as_dict))
