@@ -1,4 +1,5 @@
 import bitstring
+import copy
 from scte.Scte35 import SegmentationDescriptor
 
 
@@ -9,7 +10,7 @@ class SpliceDescriptor:
                 init_dict['reserved1'] = 127
             if 'reserved2' not in init_dict:
                 init_dict['reserved2'] = 31
-            self.as_dict = init_dict
+            self.__obj_dict = init_dict
             return
         new_descriptor = {}
         new_descriptor["splice_descriptor_tag"] = bitarray_data.read("uint:8")
@@ -29,7 +30,7 @@ class SpliceDescriptor:
         elif new_descriptor["splice_descriptor_tag"] is 3:
             # Time Descriptor
             None
-        self.as_dict = new_descriptor
+        self.__obj_dict = new_descriptor
 
     @classmethod
     def from_hex_string(cls, hex_string):
@@ -49,41 +50,49 @@ class SpliceDescriptor:
                            'uint:32=segmentation_event_id,' \
                            'bool=segmentation_event_cancel_indicator,' \
                            'uint:7=reserved1,'
-        if self.as_dict['segmentation_event_cancel_indicator'] is False:
+        if self.__obj_dict['segmentation_event_cancel_indicator'] is False:
             bitstring_format += 'bool=program_segmentation_flag,' \
                                 'bool=segmentation_duration_flag,' \
                                 'bool=delivery_not_restricted_flag,'
-            if self.as_dict['delivery_not_restricted_flag'] is False:
+            if self.__obj_dict['delivery_not_restricted_flag'] is False:
                 bitstring_format += 'bool=web_delivery_allowed_flag,' \
                                     'bool=no_regional_blackout_flag,' \
                                     'bin:2=device_restrictions,'
             else:
                 bitstring_format += 'uint:5=reserved2,'
-            if self.as_dict['program_segmentation_flag'] is False:
+            if self.__obj_dict['program_segmentation_flag'] is False:
                 # Not supported yet
                 None
-            if self.as_dict['segmentation_duration_flag'] is True:
+            if self.__obj_dict['segmentation_duration_flag'] is True:
                 bitstring_format += 'uint:40=segmentation_duration,'
             bitstring_format += 'uint:8=segmentation_upid_type,' \
                                 'uint:8=segmentation_upid_length,' \
-                                'bytes:' + str(self.as_dict['segmentation_upid_length']) + '=segmentation_upid,' \
+                                'bytes:' + str(self.__obj_dict['segmentation_upid_length']) + '=segmentation_upid,' \
                                                                                               'uint:8=segmentation_type_id,' \
                                                                                               'uint:8=segment_num,' \
                                                                                               'uint:8=segments_expected'
-            if self.as_dict['segmentation_type_id'] in [0x34, 0x36]:
+            if self.__obj_dict['segmentation_type_id'] in [0x34, 0x36]:
                 bitstring_format += ',uint:8=sub_segment_num,' \
                                     'uint:8=sub_segments_expected'
         return bitstring_format
 
     def serialize(self):
-        return bitstring.pack(fmt=self.bitstring_format, **self.as_dict)
+        return bitstring.pack(fmt=self.bitstring_format, **self.__obj_dict)
 
     @property
     def hex_string(self):
         return self.serialize().hex.upper()
 
+    def as_dict(self, upid_as_str=False):
+        the_dict = copy.deepcopy(self.__obj_dict)
+        if upid_as_str:
+            if "segmentation_upid" in the_dict:
+                the_dict['segmentation_upid'] = \
+                        str(the_dict['segmentation_upid'])
+        return the_dict
+
     def __str__(self):
-        return str(self.as_dict)
+        return str(self.as_dict())
 
     def __repr__(self):
         return self.__str__()
