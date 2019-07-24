@@ -8,7 +8,7 @@ setup(
   author='James Fining',
   author_email='james.fining@nbcuni.com',
   url='https://github.com/jamesfining/scte',
-  download_url='https://github.com/jamesfining/scte/archive/v1.0.5.tar.gz',
+  download_url='https://github.com/jamesfining/scte/archive/v1.1.0.tar.gz',
   keywords=['scte', 'scte35', 'transport', 'stream', 'broadcast'],
   install_requires=[
           'bitstring'
