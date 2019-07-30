@@ -7,7 +7,7 @@ byte_size = 8
 class SpliceEvent:
     def __init__(self, bitarray_data, init_dict=None):
         if init_dict is not None:
-            self.message_dict = init_dict
+            self.as_dict = init_dict
             return
         message_dict = {}
         message_dict["reserved"] = {"raw": bitarray_data.read("uint:16")}
