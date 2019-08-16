@@ -1,10 +1,15 @@
 import bitstring
 import copy
 from scte.Scte35 import SegmentationDescriptor
+import logging
 
 
 class SpliceDescriptor:
-    def __init__(self, bitarray_data, init_dict=None):
+    def __init__(self, bitarray_data, init_dict=None, logger=None):
+        if logger is not None:
+            self._log = logger
+        else:
+            self._log = logging.getLogger()
         if init_dict:
             if 'reserved1' not in init_dict:
                 init_dict['reserved1'] = 127
@@ -16,7 +21,7 @@ class SpliceDescriptor:
         new_descriptor["splice_descriptor_tag"] = bitarray_data.read("uint:8")
         new_descriptor["descriptor_length"] = bitarray_data.read("uint:8")
         if new_descriptor["splice_descriptor_tag"] not in [0, 1, 2, 3]:
-            self.log.info("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
+            self._log.info("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
         new_descriptor["identifier"] = bitarray_data.read("uint:32")
         if new_descriptor["splice_descriptor_tag"] is 0:
             # avail descriptor
