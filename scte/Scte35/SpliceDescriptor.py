@@ -1,6 +1,6 @@
 import bitstring
 import copy
-from scte.Scte35 import SegmentationDescriptor
+from scte.Scte35 import SegmentationDescriptor, DTMFDescriptor
 import logging
 
 
@@ -28,7 +28,7 @@ class SpliceDescriptor:
             None
         elif new_descriptor["splice_descriptor_tag"] is 1:
             # DTMF Descriptor
-            None
+            new_descriptor.update(DTMFDescriptor(bitarray_data).as_dict)
         elif new_descriptor["splice_descriptor_tag"] is 2:
             # SegmentationDescriptor
             new_descriptor.update(SegmentationDescriptor(bitarray_data).as_dict)
