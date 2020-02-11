@@ -156,8 +156,10 @@ class SpliceEvent:
     @property
     def as_dict(self):
         the_dict = copy.deepcopy(self.splice_info_section)
+        if "splice_insert" in the_dict:
+            the_dict["splice_insert"] = the_dict["splice_insert"].as_dict
         if "time_signal" in the_dict:
-            the_dict["time_signal"] = dict(the_dict["time_signal"])
+            the_dict["time_signal"] = the_dict["time_signal"].as_dict
         if "splice_descriptors" in self.splice_info_section:
             the_dict["splice_descriptors"] = []
             for splice_descriptor in self.splice_info_section["splice_descriptors"]:

@@ -1,5 +1,6 @@
 import bitstring
 import logging
+import copy
 
 
 class TimeSignal:
@@ -30,6 +31,9 @@ class TimeSignal:
     def serialize(self):
         return bitstring.pack(fmt=self.bitstring_format(), **self.splice_time)
 
+    @property
+    def as_dict(self):
+        return copy.deepcopy(self.splice_time)
 
     def __str__(self):
         return str(self.splice_time)

@@ -1,4 +1,5 @@
 import logging
+import copy
 
 
 class SpliceInsert:
@@ -71,6 +72,10 @@ class SpliceInsert:
             bitarray_data.pos += 7
 
         return splice_time
+
+    @property
+    def as_dict(self):
+        return copy.deepcopy(self.splice_insert)
 
     def __str__(self):
         return str(self.splice_insert)
