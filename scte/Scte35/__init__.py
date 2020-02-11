@@ -1,4 +1,6 @@
 from scte.Scte35.SegmentationDescriptor import SegmentationDescriptor
+from scte.Scte35.DTMFDescriptor import DTMFDescriptor
+from scte.Scte35.AvailDescriptor import AvailDescriptor
 from scte.Scte35.SpliceDescriptor import SpliceDescriptor
 from scte.Scte35.SpliceEvent import SpliceEvent
 from scte.Scte35.SpliceInsert import SpliceInsert
