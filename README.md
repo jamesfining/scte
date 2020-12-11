@@ -18,7 +18,13 @@ Install the library and command-line utilities with <code>pip install scte</code
 Documentation
 -------------
 
-v0.0.1 includes a partial implementation of a SCTE-35 decoder that accepts base64 strings as input.
+v1.1.2 includes a partial implementation of a SCTE-35 decoder that accepts as input:
+- base64 strings
+- hex strings
+- dictionary objects representing a SpliceEvent
+
+v1.1.2 supports Splice Insert and Time Signal messages
+
 The decoder implementation follows [SCTE-35 2017](https://www.scte.org/SCTEDocs/Standards/SCTE%2035%202017.pdf)
 
 
