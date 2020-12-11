@@ -19,6 +19,9 @@ class SpliceEvent:
         bytes_left = descriptor_loop_length
         i=0
         while bytes_left > 0:
+            if bytes_left < 6:
+                self._log.info("Not enough bytes left to construct a Splice Descriptor. Skipping rest of bitarray_data.")
+                break
             new_descriptor = None
             if init_arr:
                 new_descriptor = SpliceDescriptor.from_dict(init_arr[i])

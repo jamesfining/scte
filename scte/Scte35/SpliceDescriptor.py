@@ -19,9 +19,13 @@ class SpliceDescriptor:
             return
         new_descriptor = {}
         new_descriptor["splice_descriptor_tag"] = bitarray_data.read("uint:8")
-        new_descriptor["descriptor_length"] = bitarray_data.read("uint:8")
         if new_descriptor["splice_descriptor_tag"] not in [0, 1, 2, 3]:
             self._log.info("Skipping Unsupported splice_descriptor_tag: " + str(new_descriptor["splice_descriptor_tag"]))
+            self.__obj_dict = new_descriptor
+            return
+
+        new_descriptor["descriptor_length"] = bitarray_data.read("uint:8")
+        
         new_descriptor["identifier"] = bitarray_data.read("uint:32")
         if new_descriptor["splice_descriptor_tag"] is 0:
             # avail descriptor
