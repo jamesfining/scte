@@ -12,7 +12,8 @@ class SegmentationDescriptor:
         new_descriptor["segmentation_event_id"] = bitarray_data.read("uint:32")
         new_descriptor["segmentation_event_cancel_indicator"] = bitarray_data.read("bool")
         # Reserved
-        new_descriptor["reserved1"] = bitarray_data.read("uint:7")
+        bitarray_data.pos += 7
+        #new_descriptor["reserved1"] = bitarray_data.read("uint:7")
         if new_descriptor["segmentation_event_cancel_indicator"] is False:
             new_descriptor["program_segmentation_flag"] = bitarray_data.read("bool")
             new_descriptor["segmentation_duration_flag"] = bitarray_data.read("bool")
@@ -24,7 +25,8 @@ class SegmentationDescriptor:
                 new_descriptor["device_restrictions"] = bitarray_data.read("bin:2")
             else:
                 # Reserved
-                new_descriptor["reserved2"] = bitarray_data.read("uint:5")
+                bitarray_data.pos += 5
+                #new_descriptor["reserved2"] = bitarray_data.read("uint:5")
             if new_descriptor["program_segmentation_flag"] is False:
                 new_descriptor["component_count"] = bitarray_data.read("uint:8")
                 loop_counter = new_descriptor["component_count"]

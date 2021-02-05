@@ -29,7 +29,7 @@ class SpliceEvent:
             else:
                 new_descriptor = SpliceDescriptor(bitarray_data)
             # Descriptor Length does not include splice_descriptor_tag
-            bytes_left -= new_descriptor.as_dict()["descriptor_length"]+2
+            bytes_left -= new_descriptor.as_dict()["descriptor_length"]+1
             splice_descriptors.append(new_descriptor)
         return splice_descriptors
 
@@ -114,7 +114,7 @@ class SpliceEvent:
         bitstring_format = 'uint:8=table_id,' \
                            'bool=section_syntax_indicator,' \
                            'bool=private,' \
-                           'uint:2=0,' \
+                           'uint:2=1,' \
                            'uint:12=section_length,' \
                            'uint:8=protocol_version,' \
                            'bool=encrypted_packet,' \
@@ -138,7 +138,7 @@ class SpliceEvent:
             raise NotImplementedError('Can not interpret splice_schedule events')
 
         elif self.splice_info_section["splice_command_type"] is 5:
-            raise NotImplementedError('Can not interpret splice_insert events')
+            splice_command_type_bs = self.splice_info_section["splice_insert"].serialize()
 
         elif self.splice_info_section["splice_command_type"] is 6:
             splice_command_type_bs = self.splice_info_section["time_signal"].serialize()

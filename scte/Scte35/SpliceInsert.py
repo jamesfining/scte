@@ -1,6 +1,6 @@
 import logging
 import copy
-
+import bitstring
 
 class SpliceInsert:
     def __init__(self, bitarray_data, init_dict=None, logger=None):
@@ -72,6 +72,41 @@ class SpliceInsert:
             bitarray_data.pos += 7
 
         return splice_time
+
+
+    def splice_time_bitstring_format(self, splice_time_obj):
+        bitstring_format = 'bool=time_spec'
+        return bitstring_format
+
+
+    def splice_time_serialize(self):
+        return
+
+
+    @property
+    def bitstring_format(self):
+        """
+        Return a formatted string representing the object for use by the bitstring library.
+        """
+        bitstring_format = 'uint:32=splice_event_id,' \
+                           'bool=splice_event_cancel_indicator,' \
+                           'uint:7=1'
+        if self.splice_insert["splice_event_cancel_indicator"]:
+            return bitstring_format
+        else:
+            bitstring_format += ',' \
+                                'bool=out_of_network_indicator,' \
+                                'bool=program_splice_flag,' \
+                                'bool=duration_flag,' \
+                                'bool=splice_immediate_flag,' \
+                                'uint:4=1,'
+        if self.splice_insert['program_splice_flag'] and not self.splice_insert['splice_immediate_flag']:
+            bitstring_format += 'bool='
+                                
+
+
+    def serialize(self):
+        return bitstring.pack(fmt=self.bitstring_format(), **self.splice_insert)
 
     @property
     def as_dict(self):

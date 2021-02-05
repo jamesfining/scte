@@ -12,9 +12,9 @@ class SpliceDescriptor:
             self._log = logging.getLogger()
         if init_dict:
             if 'reserved1' not in init_dict:
-                init_dict['reserved1'] = 127
+                init_dict['reserved1'] = 1
             if 'reserved2' not in init_dict:
-                init_dict['reserved2'] = 31
+                init_dict['reserved2'] = 1
             self.__obj_dict = init_dict
             return
         new_descriptor = {}
@@ -58,7 +58,7 @@ class SpliceDescriptor:
                            'uint:32=identifier,' \
                            'uint:32=segmentation_event_id,' \
                            'bool=segmentation_event_cancel_indicator,' \
-                           'uint:7=reserved1,'
+                           'uint:7=1,'
         if self.__obj_dict['segmentation_event_cancel_indicator'] is False:
             bitstring_format += 'bool=program_segmentation_flag,' \
                                 'bool=segmentation_duration_flag,' \
@@ -68,7 +68,7 @@ class SpliceDescriptor:
                                     'bool=no_regional_blackout_flag,' \
                                     'bin:2=device_restrictions,'
             else:
-                bitstring_format += 'uint:5=reserved2,'
+                bitstring_format += 'uint:5=1,'
             if self.__obj_dict['program_segmentation_flag'] is False:
                 # Not supported yet
                 None

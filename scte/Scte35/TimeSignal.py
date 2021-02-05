@@ -23,7 +23,7 @@ class TimeSignal:
         bitstring_format = 'bool=time_specified_flag'
 
         if self.splice_time["time_specified_flag"] is True:
-            bitstring_format += ',' + 'uint:6=0,' \
+            bitstring_format += ',' + 'uint:6=1,' \
                                       'uint:33=pts_time'
 
         return bitstring_format
